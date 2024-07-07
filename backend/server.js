@@ -28,7 +28,7 @@ app.delete('/:shortUrl', async (req, res) => {
     const shortUrl = `${req.protocol}://${req.get('host')}/${req.params.shortUrl}`;
     try {
         await ShortUrl.findOneAndDelete({ shortUrl });
-        console.log('deleted')
+        console.log(`deleted ${shortUrl}`)
         res.status(204).send("Deleted");
     } catch (error) {
         console.log(error);
@@ -83,6 +83,6 @@ app.get('/:shortUrl', async (req, res) => {
     }
 });
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log('Server is running on port 3000');
+app.listen(process.env.PORT || 4444, () => {
+    console.log('Server is running on port 4444');
 });
