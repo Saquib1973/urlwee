@@ -9,8 +9,7 @@ const App = () => {
     return (
         <div className="min-h-screen flex flex-col gap-4 justify-start items-center">
             <Navbar />
-            <div className="min-h-[75vh] max-w-4xl max-md:px-2">
-
+            <div className="min-h-[75vh] w-full md:w-[896px] px-2">
                 <Routes>
                     <Route element={<Home />} path="/" />
                     <Route element={<Dashboard />} path="/dashboard" />

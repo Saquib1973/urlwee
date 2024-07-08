@@ -73,7 +73,7 @@ const Home = () => {
         let shortUrl = urlId;
         setLoading(true);
         try {
-            await axios.delete(shortUrl);
+            await axios.put(`${backend}delete`, { shortUrl });
             customToast(`Url '${shortUrl}' Deleted`)
             fetchUrls();
         } catch (error) {
@@ -92,13 +92,12 @@ const Home = () => {
     const paginatedUrls = urls.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
     return (
         <>
-            {/* <Navbar /> */}
-            <div className="flex gap-4 max-md:px-4 w-full items-center justify-center my-10 ">
-                <Input type="text" placeholder="Enter a URL" className="w-full py-6 text-lg" value={urlInput} onChange={(e) => setUrlInput(e.target.value)} />
+            <div className="flex gap-4 max-md:px-4 w-full items-center my-10 ">
+                <Input type="text" placeholder="Enter a URL" className="md:min-w-full py-6 text-lg" value={urlInput} onChange={(e) => setUrlInput(e.target.value)} />
                 <Button onClick={createShortenedUrl} disabled={loading}>{loading ? 'Wait...' : 'Create'}</Button>
             </div>
             {shortenedUrl?.newUrl?.shortUrl &&
-                <div className="flex items-center justify-between border bg-white dark:bg-gray-900 gap-4 p-4 rounded-md shadow-md px-6 active:scale-95 transition-all duration-500 w-[95%] md:w-[60%] select-none cursor-pointer relative">
+                <div className="flex items-center justify-between border bg-white dark:bg-gray-900 gap-4 p-4 rounded-md shadow-md px-6 active:scale-95 transition-all duration-500 w-[95%] md:w-full py-4 select-none relative">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="h-6 w-6 absolute -top-2 -right-2" onClick={() => setShortenedUrl("")}>
                         <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>

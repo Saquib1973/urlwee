@@ -24,13 +24,16 @@ app.get('/getAllUrls', async (req, res) => {
     }
 });
 
-app.delete('/:shortUrl', async (req, res) => {
-    const shortUrl = `${req.protocol}://${req.get('host')}/${req.params.shortUrl}`;
+app.put('/delete', async (req, res) => {
+    const { shortUrl } = req.body;
+    console.log(req.body)
+    console.log(shortUrl)
     try {
         await ShortUrl.findOneAndDelete({ shortUrl });
         console.log(`deleted ${shortUrl}`)
         res.status(204).send("Deleted");
     } catch (error) {
+        console.log("Some Error while deleting ");
         console.log(error);
         res.status(500).send("Some error occurred");
     }
