@@ -76,20 +76,25 @@ export const redirectUrl = async (req, res) => {
         }
         url.clicks += 1;
         const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        const geo = geoip.lookup(ip);
         console.log("ip", ip)
-        console.log("geo", geo)
-        const location = {
-            country: geo ? geo.country : 'unknown',
-            region: geo ? geo.region : 'unknown',
-            city: geo ? geo.city : 'unknown'
-        };
+        for (let i = 0; i < ip.length; i++) {
+            const geo = geoip.lookup(ip[i]);
+            console.log("geo", geo)
+            const location = {
+                country: geo ? geo.country : 'unknown',
+                region: geo ? geo.region : 'unknown',
+                city: geo ? geo.city : 'unknown'
+            };
+            if (location.country || location.region || location.city) {
 
-        url.hits.push({ location });
-        await url.save();
+                url.hits.push({ location });
+                await url.save();
 
-        console.log(`URL hit from ${location.country}, ${location.region}, ${location.city}`);
-        res.redirect(url.full);
+                console.log(`URL hit from ${location.country}, ${location.region}, ${location.city}`);
+                res.redirect(url.full);
+            }
+        }
+
     } catch (error) {
         console.log(error);
         res.status(500).send("Some error occurred");
