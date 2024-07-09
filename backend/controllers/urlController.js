@@ -75,17 +75,18 @@ export const redirectUrl = async (req, res) => {
             return res.status(404).send('URL not found');
         }
         url.clicks += 1;
-        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        let geo
-        if (ip?.length > 1) {
-            geo = geoip.lookup(ip[0]);
 
-        } else {
+        // Extract IP address
+        const forwardedIpsStr = req.headers['x-forwarded-for'];
+        const ip = forwardedIpsStr ? forwardedIpsStr.split(',')[0].trim() : req.connection.remoteAddress;
 
-            geo = geoip.lookup(ip);
-        }
-        console.log("ip", ip)
-        console.log("geo", geo)
+        // Perform GeoIP lookup
+        const geo = geoip.lookup(ip);
+
+        // Log IP and geo information
+        console.log("ip", ip);
+        console.log("geo", geo);
+
         const location = {
             country: geo ? geo.country : 'unknown',
             region: geo ? geo.region : 'unknown',
@@ -102,7 +103,6 @@ export const redirectUrl = async (req, res) => {
         res.status(500).send("Some error occurred");
     }
 };
-
 export const getUrlHits = async (req, res) => {
     const { shortUrl } = req.params;
     try {
