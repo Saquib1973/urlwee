@@ -75,15 +75,41 @@ export const redirectUrl = async (req, res) => {
             return res.status(404).send('URL not found');
         }
         url.clicks += 1;
+        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const geo = geoip.lookup(ip);
+        console.log("ip", ip)
+        console.log("geo", geo)
+        const location = {
+            country: geo ? geo.country : 'unknown',
+            region: geo ? geo.region : 'unknown',
+            city: geo ? geo.city : 'unknown'
+        };
+
+        url.hits.push({ location });
         await url.save();
-        const geo = geoip.lookup(req.ip);
-        console.log(`URL hit from ${geo ? geo.country : 'unknown location'}`);
+
+        console.log(`URL hit from ${location.country}, ${location.region}, ${location.city}`);
         res.redirect(url.full);
     } catch (error) {
         console.log(error);
         res.status(500).send("Some error occurred");
     }
 };
+
+export const getUrlHits = async (req, res) => {
+    const { shortUrl } = req.params;
+    try {
+        const url = await ShortUrl.findOne({ shortUrl });
+        if (!url) {
+            return res.status(404).send('URL not found');
+        }
+        res.status(200).send(url.hits);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Some error occurred");
+    }
+};
+
 export const getUserUrls = async (req, res) => {
     try {
         const { userId } = req.body;

@@ -11,6 +11,7 @@ import { handleCopy } from "./Home"
 import Loader from '@/components/Loader';
 import { customNotification } from '@/lib/customNotification';
 import { Link } from 'react-router-dom';
+import UrlHits from '@/components/UrlHits';
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -134,6 +135,9 @@ const Dashboard = () => {
 
                                                             <h1 className="text-gray-500 text-base max-md:text-xs max-md:font-extralight underline underline-offset-4 mb-4">Details</h1>
                                                             <p className="text-left">No. of clicks : {url.clicks}</p>
+                                                            <div>
+                                                                <UrlHits shortUrl={url.shortUrl} />
+                                                            </div>
                                                             <Link to={url.shortUrl} className="mb-2 underline underline-offset-4 hover:text-blue-500 text-xs" target='_blank'>{url.shortUrl}</Link>
                                                             <div className='flex mt-2 gap-4 justify-end'>
                                                                 <Button className="max-md:text-xs max-md:font-extralight" onClick={() => handleCopy(url.shortUrl)}>Copy</Button>

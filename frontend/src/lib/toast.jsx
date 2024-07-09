@@ -24,7 +24,7 @@ export const getCurrentDateTime = () => {
 
 console.log(getCurrentDateTime());
 
-export const customToast = (heading, desc) => {
+export const customToast = (heading, desc, label = "close", func = null) => {
     toast(heading, {
         description: <div className="flex flex-col py-1">
             <div>
@@ -36,8 +36,8 @@ export const customToast = (heading, desc) => {
             </p>
         </div>,
         action: {
-            label: "Close",
-            // onClick: () => console.log("Undo"),
+            label: label,
+            onClick: func
         },
     })
 }

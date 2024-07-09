@@ -17,7 +17,8 @@ app.use('/api/urls', urlRoutes);
 app.use('/api/users', userRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Home Route Url Shortner API');
+    // console.log()
+    res.send(`{Home Route Url Shortner API ${req.ip}}`);
 });
 
 const PORT = process.env.PORT || 4444;

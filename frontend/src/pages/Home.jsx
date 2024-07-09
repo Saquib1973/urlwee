@@ -64,6 +64,11 @@ const Home = () => {
         setShortenedUrl("")
         setLoading(true);
         if (!urlInput) {
+            customToast("Error",
+                <p className="text-red-500">
+                    Please enter a url
+                </p>
+            )
             setLoading(false);
             return;
         }
