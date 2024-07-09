@@ -1,7 +1,7 @@
 
 import { toast } from "sonner"
 
-const getCurrentDateTime = () => {
+export const getCurrentDateTime = () => {
     var curr = new Date();
 
     var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -24,9 +24,17 @@ const getCurrentDateTime = () => {
 
 console.log(getCurrentDateTime());
 
-export const customToast = (desc) => {
-    toast(desc, {
-        description: getCurrentDateTime(),
+export const customToast = (heading, desc) => {
+    toast(heading, {
+        description: <div className="flex flex-col py-1">
+            <div>
+                {desc && desc}
+            </div>
+            <p className="text-[0.65rem] tracking-tighter text-gray-500">
+
+                {getCurrentDateTime()}
+            </p>
+        </div>,
         action: {
             label: "Close",
             // onClick: () => console.log("Undo"),

@@ -5,7 +5,7 @@ const Footer = () => {
     return (
 
 
-        <footer class="bg-white rounded-lg shadow max-md:w-full dark:bg-gray-900">
+        <footer class="bg-white rounded-lg absolute bottom-0 w-[896px] shadow max-md:w-full dark:bg-gray-900">
             <div class="flex w-full gap-4 items-center justify-between p-4">
                 <div className="text-sm text-gray-500 sm:text-center dark:text-gray-400">Made with 💓 by <Link to={'https://heysaquib.vercel.app/'} target='_blank' class="underline text-blue-600 underline-offset-4">@saquib</Link>.
                 </div>

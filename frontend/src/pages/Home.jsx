@@ -15,20 +15,30 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+
 import axios from "axios";
 import { useEffect, useState } from "react";
+import QRCode from "react-qr-code";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { customToast } from "../lib/toast";
-import QRCode from "react-qr-code";
+import { useAuth } from "@/common/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import Loader from "@/components/Loader";
+import { customNotification } from "@/lib/customNotification";
 
 
 const ITEMS_PER_PAGE = 8;
-const backend = "https://short-url-backend-5dmi.onrender.com/"
-// const backend = "http://localhost:4444/"
+const backend = import.meta.env.VITE_BACKEND_URL;
+
+export const handleCopy = (shortUrl) => {
+    navigator.clipboard.writeText(shortUrl);
+    customToast('Url Copied', `${shortUrl} was copied`)
+};
 
 const Home = () => {
+    const { user } = useAuth();
     const [urlInput, setUrlInput] = useState("");
     const [urls, setUrls] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -37,12 +47,12 @@ const Home = () => {
 
     useEffect(() => {
         fetchUrls();
-    }, []);
+    }, [user]);
 
     const fetchUrls = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${backend}getAllUrls`);
+            const response = await axios.get(`${backend}/api/urls/`);
             setUrls(response.data);
         } catch (error) {
             console.error('Error fetching URLs:', error);
@@ -51,16 +61,29 @@ const Home = () => {
     };
 
     const createShortenedUrl = async () => {
+        setShortenedUrl("")
         setLoading(true);
         if (!urlInput) {
             setLoading(false);
             return;
         }
+        if (!user) {
+            customNotification("Error",
+                <p className="text-red-500">
+                    Please login to create new url
+                </p>
+            )
+        }
         try {
-            const response = await axios.post(`${backend}shortUrl`, { full: urlInput });
-            console.log(response)
+            const token = localStorage.getItem('token');
+            const response = await axios.post(`${backend}/api/urls/shortUrl`,
+                {
+                    full: urlInput,
+                }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            customToast("Url weee'd", `Given url shortened successfully to ${response.data.newUrl.shortUrl}`)
             setShortenedUrl(response.data);
-            customToast(`Url Shortened`)
             setUrlInput("");
             fetchUrls();
         } catch (error) {
@@ -69,35 +92,31 @@ const Home = () => {
         setLoading(false);
     };
 
-    const handleDelete = async (urlId) => {
-        let shortUrl = urlId;
-        setLoading(true);
-        try {
-            await axios.put(`${backend}delete`, { shortUrl });
-            customToast(`Url '${shortUrl}' Deleted`)
-            fetchUrls();
-        } catch (error) {
-            console.error('Error deleting URL:', error);
-            customToast(`Some error occured .Please try again later.`)
-        }
-        setLoading(false);
-    };
+    // const handleDelete = async (shortUrl) => {
+    //     setLoading(true);
+    //     try {
+    //         await axios.put(`${backend}/api/urls/delete`, { shortUrl }, {
+    //             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    //         });
+    //         fetchUrls();
+    //     } catch (error) {
+    //         console.error('Error deleting URL:', error);
+    //     }
+    //     setLoading(false);
+    // };
 
-    const handleCopy = (shortUrl) => {
-        navigator.clipboard.writeText(shortUrl);
-        customToast(`Copied URL: ${shortUrl}`)
-    };
 
     const totalPages = Math.ceil(urls.length / ITEMS_PER_PAGE);
     const paginatedUrls = urls.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+    console.log(shortenedUrl)
     return (
         <>
             <div className="flex gap-4 max-md:px-4 w-full items-center my-10 ">
                 <Input type="text" placeholder="Enter a URL" className="md:min-w-full py-6 text-lg" value={urlInput} onChange={(e) => setUrlInput(e.target.value)} />
-                <Button onClick={createShortenedUrl} disabled={loading}>{loading ? 'Wait...' : 'Create'}</Button>
+                <Button onClick={createShortenedUrl} disabled={loading}>{loading ? <Loader sz={"sm"} /> : 'Create'}</Button>
             </div>
             {shortenedUrl?.newUrl?.shortUrl &&
-                <div className="flex items-center justify-between border bg-white dark:bg-gray-900 gap-4 p-4 rounded-md shadow-md px-6 active:scale-95 transition-all duration-500 w-[95%] md:w-full py-4 select-none relative">
+                <div className="flex items-center justify-between border bg-white mb-5 dark:bg-gray-900 gap-4 p-4 rounded-md shadow-md px-6 active:scale-95 transition-all duration-500 w-[95%] md:w-full py-4 select-none relative">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="h-6 w-6 absolute -top-2 -right-2" onClick={() => setShortenedUrl("")}>
                         <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
@@ -119,9 +138,9 @@ const Home = () => {
             }
 
             {loading ? (
-                <div className="flex items-center flex-col gap-4 w-1/3">
+                <div className="flex items-center justify-center flex-col gap-4 w-full">
 
-                    Loading...
+                    <Loader sz={"lg"} />
                 </div>
             ) : (
                 <>
@@ -130,7 +149,7 @@ const Home = () => {
                         <TableHeader>
                             <TableRow>
                                 <TableHead className=" p-1">No.</TableHead>
-                                <TableHead className="p-1">Original URL</TableHead>
+                                {/* <TableHead className="p-1">Original URL</TableHead> */}
                                 <TableHead className="p-1">Short URL</TableHead>
                                 <TableHead className="text-center p-1">Clicks</TableHead>
                                 <TableHead className="text-center p-1">Actions</TableHead>
@@ -140,15 +159,15 @@ const Home = () => {
                             {paginatedUrls.map((url, index) => (
                                 <TableRow key={index}>
                                     <TableCell className="font-medium p-1">{index + 1}</TableCell>
-                                    <TableCell className="text-ellipsis line-clamp-1 p-1 flex items-center mt-2 max-md:w-[200px]">
+                                    {/* <TableCell className="text-ellipsis line-clamp-1 p-1 flex items-center mt-2 max-md:w-[200px]">
                                         {url.full}
-                                    </TableCell>
+                                    </TableCell> */}
                                     <TableCell className=" p-1">
                                         {url.shortUrl}
                                     </TableCell>
                                     <TableCell className="text-center p-1">{url.clicks}</TableCell>
                                     <TableCell className="text-center p-1">
-                                        <Popover>
+                                        {/* <Popover>
                                             <PopoverTrigger>
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 cursor-pointer">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
@@ -159,11 +178,11 @@ const Home = () => {
                                                 <Button onClick={() => handleDelete(url.shortUrl)} className="bg-red-500 dark:text-white hover:bg-red-400 max-md:text-xs max-md:font-extralight">Delete</Button>
                                                 <Button className="max-md:text-xs max-md:font-extralight" onClick={() => handleCopy(url.shortUrl)}>Copy</Button>
                                             </PopoverContent>
-                                        </Popover>
+                                        </Popover> */}
 
                                         {/* ONLY COPY */}
 
-                                        {/* <button className="bg-white text-black p-2 text-xs py-1 rounded-lg active:scale-95 max-md:font-extralight" onClick={() => handleCopy(url.shortUrl)}>Copy</button> */}
+                                        <button className="dark:bg-white bg-black/80 text-white dark:text-black p-2 text-xs py-1 rounded-lg active:scale-95 max-md:font-extralight" onClick={() => handleCopy(url.shortUrl)}>Copy</button>
 
                                     </TableCell>
                                 </TableRow>
