@@ -7,7 +7,7 @@ function WorldMap({ countriesData }) {
 
     useEffect(() => {
         if (countriesData && Object.keys(countriesData).length > 0) {
-            const maxValue = Math.max(...Object.values(countriesData));
+            const maxValue = Math.max(...Object.values(countriesData).filter(value => isFinite(value)));
             setMax(maxValue);
         }
     }, [countriesData]);
@@ -23,10 +23,9 @@ function WorldMap({ countriesData }) {
     };
 
     return (
-        <div className="flex w-full h-full border dark:border-white">
-
+        <div style={{ width: "100%", height: "500px" }} className="flex">
             {
-                countriesData && Object.keys(countriesData).length > 0 && max > 0 && (
+                Object.keys(countriesData).length > 0 && isFinite(max) && max > 0 && (
                     <VectorMap
                         map={worldMill}
                         containerStyle={{

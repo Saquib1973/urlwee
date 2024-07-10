@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label"
 const UrlHits = ({ shortUrl }) => {
     const [hits, setHits] = useState([]);
     const [logDialogOpen, setLogDialogOpen] = useState(false);
+
     useEffect(() => {
         const fetchHits = async () => {
             try {
@@ -42,7 +43,15 @@ const UrlHits = ({ shortUrl }) => {
             return acc;
         }, {});
 
-        return countryCounts;
+        // Filter out invalid values
+        const validCountryCounts = Object.entries(countryCounts).reduce((acc, [key, value]) => {
+            if (key && value && isFinite(value)) {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
+
+        return validCountryCounts;
     };
 
     const countriesData = createCountriesData(hits);
@@ -58,16 +67,15 @@ const UrlHits = ({ shortUrl }) => {
                         <DialogTitle>Maps/Logs</DialogTitle>
                         <DialogDescription className="w-full">
                             <h2 className="text-lg font-semibold mb-4">Countries link hits</h2>
-                            <ul className='grid grid-cols-3 mx-auto'>
+                            <div className='grid grid-cols-3 mx-auto'>
                                 {Object.entries(countriesData).map(([countryCode, count]) => (
                                     <li key={countryCode} className="flex items-center mb-2">
                                         <Flag code={countryCode} className="mr-2 w-6 h-4" alt={`Flag of ${countryCode}`} />
                                         <span className="font-medium">{countryCode}</span> - {count} hits
                                     </li>
                                 ))}
-                            </ul>
+                            </div>
                             <div className='w-full flex justify-end'>
-
                                 <Button variant="outline" onClick={() => setLogDialogOpen(true)}>View Logs</Button>
                             </div>
                         </DialogDescription>
@@ -87,13 +95,10 @@ const UrlHits = ({ shortUrl }) => {
                                     ))}
                                 </ul>
                             </DialogDescription>
-
                         </DialogContent>
                     </Dialog>
-
                 </DialogContent>
             </Dialog>
-
         </>
     );
 };
