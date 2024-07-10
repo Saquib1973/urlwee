@@ -12,6 +12,8 @@ import Loader from '@/components/Loader';
 import { customNotification } from '@/lib/customNotification';
 import { Link } from 'react-router-dom';
 import UrlHits from '@/components/UrlHits';
+import WorldMap from '@/components/WorldMap';
+
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -116,7 +118,7 @@ const Dashboard = () => {
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                                 </svg>
                                             </DialogTrigger>
-                                            <DialogContent className="p-4">
+                                            <DialogContent className="p-4 ">
                                                 <DialogHeader>
                                                     {/* <DialogTitle className="mb-2 underline underline-offset-4">QR for {url.shortUrl}</DialogTitle> */}
                                                     <DialogDescription className="flex justify-around gap-2">
@@ -135,13 +137,12 @@ const Dashboard = () => {
 
                                                             <h1 className="text-gray-500 text-base max-md:text-xs max-md:font-extralight underline underline-offset-4 mb-4">Details</h1>
                                                             <p className="text-left">No. of clicks : {url.clicks}</p>
-                                                            <div>
-                                                                <UrlHits shortUrl={url.shortUrl} />
-                                                            </div>
+
                                                             <Link to={url.shortUrl} className="mb-2 underline underline-offset-4 hover:text-blue-500 text-xs" target='_blank'>{url.shortUrl}</Link>
-                                                            <div className='flex mt-2 gap-4 justify-end'>
+                                                            <div className='flex flex-wrap mt-2 gap-2 justify-start'>
                                                                 <Button className="max-md:text-xs max-md:font-extralight" onClick={() => handleCopy(url.shortUrl)}>Copy</Button>
                                                                 <Button onClick={() => handleDelete(url.shortUrl)} className="bg-red-500 dark:text-white hover:bg-red-400 max-md:text-xs max-md:font-extralight">Delete</Button>
+                                                                <UrlHits shortUrl={url.shortUrl} />
                                                             </div>
 
                                                         </div>
@@ -158,7 +159,7 @@ const Dashboard = () => {
                     </Table>
                 )}
             </div>
-
+            {/* <WorldMap /> */}
         </div>
     );
 };

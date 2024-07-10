@@ -104,7 +104,7 @@ export const redirectUrl = async (req, res) => {
     }
 };
 export const getUrlHits = async (req, res) => {
-    const { shortUrl } = req.params;
+    const { shortUrl } = req.query;
     try {
         const url = await ShortUrl.findOne({ shortUrl });
         if (!url) {

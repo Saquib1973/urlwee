@@ -76,4 +76,7 @@
   .remove-ring {
     @apply !ring-0 focus-visible:!ring-offset-0 focus-visible:!ring-0;
   }
+  .jvectormap-container {
+    @apply w-[100%] h-[100%];
+  }
 }

@@ -8,7 +8,7 @@ router.get('/', getAllUrls);
 router.put('/delete', protect, deleteUrl);
 router.post('/shortUrl', protect, createShortUrl);
 router.get('/getUserUrls', protect, getUserUrls);
+router.get('/hits', getUrlHits);
 router.get('/:shortUrl', redirectUrl);
-router.get('/:shortUrl/hits', getUrlHits);
 
 export default router;
