@@ -14,13 +14,15 @@ export const getAllUrls = async (req, res) => {
 };
 
 export const deleteUrl = async (req, res) => {
-    const { shortUrl, userId } = req.body;
+    const { shortUrl } = req.body;
+    const { userId } = req.user;
+    console.log(shortUrl, userId)
     try {
         const url = await ShortUrl.findOne({ shortUrl });
         if (!url) {
             return res.status(404).send('URL not found');
         }
-        if (url.user.toString() !== userId._id.toString()) {
+        if (url.user.toString() !== userId.toString()) {
             return res.status(403).send('Unauthorized to delete this URL');
         }
         await ShortUrl.findOneAndDelete({ shortUrl });
@@ -47,7 +49,8 @@ const deleteAfterTime = async (shortUrl, deletionTime, userId) => {
 };
 
 export const createShortUrl = async (req, res) => {
-    const { full, deletionTime, userId } = req.body;
+    const { full, deletionTime } = req.body;
+    const { userId } = req.user;
     try {
         const uniqueId = uuidv4().substring(0, 5);
         const shortUrl = `${req.protocol}://${req.get('host')}/api/urls/${uniqueId}`;
@@ -119,7 +122,7 @@ export const getUrlHits = async (req, res) => {
 
 export const getUserUrls = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.user;
         const user = await User.findById(userId).populate('urls').exec();
 
         if (!user) {

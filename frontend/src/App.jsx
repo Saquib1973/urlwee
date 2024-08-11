@@ -7,6 +7,7 @@ import { AuthProvider } from "./common/AuthContext";
 import AuthForm from "./pages/AuthForm";
 import ProtectedRoute from "./lib/ProtectedRoute";
 import { Toaster } from "./components/ui/toaster";
+import UpdateProfileForm from "./pages/UpdateProfile.jsx";
 
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
                         <Route path="/" element={<Home />} />
                         <Route path="/login" element={<AuthForm type="login" />} />
                         <Route path="/signup" element={<AuthForm type="signup" />} />
+                        <Route path="/update" element={<ProtectedRoute><UpdateProfileForm /></ProtectedRoute>} />
                         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     </Routes>
                     <Toaster />

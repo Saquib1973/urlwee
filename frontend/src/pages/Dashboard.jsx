@@ -1,21 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useAuth } from '../common/AuthContext';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import QRCode from "react-qr-code";
-import { customToast } from '@/lib/toast';
-import { handleCopy } from "./Home"
 import Loader from '@/components/Loader';
-import { customNotification } from '@/lib/customNotification';
-import { Link } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import UrlHits from '@/components/UrlHits';
-import WorldMap from '@/components/WorldMap';
+import { customNotification } from '@/lib/customNotification';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import QRCode from "react-qr-code";
+import { Link } from 'react-router-dom';
+import { useAuth } from '../common/AuthContext';
+import { handleCopy } from "./Home";
 
 
-const backend = import.meta.env.VITE_BACKEND_URL;
+export const backend = import.meta.env.VITE_BACKEND_URL;
+// export const backend = "http://localhost:4444";
 
 const Dashboard = () => {
     const { user, logout } = useAuth();
@@ -41,6 +39,7 @@ const Dashboard = () => {
         }
         setLoading(false);
     };
+
 
     const handleDelete = async (shortUrl) => {
         setLoading(true);
@@ -76,12 +75,18 @@ const Dashboard = () => {
 
 
 
+
+
     return (
         <div>
             <div className='flex justify-between items-center mb-10'>
 
                 <h1>Dashboard</h1>
-                <Button onClick={logout} className="!bg-red-500 !py-2 text-white">Logout</Button>
+                <div className='flex gap-4 justify-end items-end'>
+
+                    <Link to={'/update'} className="!py-2 dark:text-white text-black hover:underline underline-offset-4 text-xs">Update Username/Password</Link>
+                    <Button onClick={logout} className="!bg-red-500 !py-2 text-white">Logout</Button>
+                </div>
             </div>
             <div>
                 {loading ? (
